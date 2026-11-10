@@ -1,0 +1,250 @@
+/*
+  Paleta de la tienda
+  pino      #1F3A34  fondo del aside y botón principal
+  arena     #E9E2D0  fondo general
+  terracota #C2683F  acentos y acciones destacadas
+  tinta     #22262A  texto
+*/
+:root {
+  --pino: #1f3a34;
+  --pino-claro: #2c5048;
+  --arena: #e9e2d0;
+  --arena-clara: #f6f2e8;
+  --terracota: #c2683f;
+  --terracota-oscura: #a5552f;
+  --tinta: #22262a;
+  --linea: #d6cdb6;
+
+  /* Variables propias de Bootstrap que reemplazamos con la paleta */
+  --bs-body-font-family: "Public Sans", system-ui, sans-serif;
+  --bs-body-color: var(--tinta);
+  --bs-body-bg: var(--arena);
+  --bs-border-color: var(--linea);
+  --bs-link-color-rgb: 31, 58, 52;
+  --bs-link-hover-color-rgb: 194, 104, 63;
+  --bs-border-radius: 3px;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--arena);
+}
+
+h1, h2, h3, .marca {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Estructura ---------- */
+.contenedor {
+  flex: 1;
+  display: flex;
+}
+
+.contenido {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  max-width: 1100px;
+}
+
+/* ---------- Navbar ---------- */
+.barra {
+  background: var(--arena-clara);
+  border-bottom: 1px solid var(--linea);
+  padding: 0.75rem 2.5rem;
+}
+
+.barra .marca {
+  color: var(--pino);
+  font-size: 1.35rem;
+  text-decoration: none;
+}
+
+.etiqueta-rol {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--terracota);
+  color: var(--terracota);
+  padding: 0.15rem 0.5rem;
+}
+
+/* ---------- Aside ---------- */
+.lateral {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--pino);
+  padding: 2rem 0;
+}
+
+.lateral .titulo-seccion {
+  color: #9fb5ab;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 1.5rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.lateral a {
+  display: block;
+  color: var(--arena);
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  border-left: 3px solid transparent;
+}
+
+.lateral a:hover {
+  background: var(--pino-claro);
+}
+
+/* El enlace de la página actual se marca con la clase "activo" */
+.lateral a.activo {
+  border-left-color: var(--terracota);
+  background: var(--pino-claro);
+}
+
+/* ---------- Footer ---------- */
+.pie {
+  border-top: 1px solid var(--linea);
+  padding: 1rem 2.5rem;
+  font-size: 0.85rem;
+  color: #6b6658;
+  background: var(--arena-clara);
+}
+
+/* ---------- Componentes ---------- */
+.panel {
+  background: var(--arena-clara);
+  border: 1px solid var(--linea);
+  padding: 1.5rem;
+}
+
+.cifra {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 2.25rem;
+  color: var(--pino);
+  line-height: 1;
+}
+
+.cifra-texto {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6b6658;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  border-bottom: 2px solid var(--pino);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.encabezado h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.table {
+  --bs-table-bg: var(--arena-clara);
+  --bs-table-hover-bg: #efe8d8;
+  border: 1px solid var(--linea);
+}
+
+.table thead th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--arena);
+  background: var(--pino);
+  font-weight: 500;
+}
+
+.stock-bajo {
+  color: var(--terracota);
+  font-weight: 600;
+}
+
+/* ---------- Botones ---------- */
+.btn-pino {
+  --bs-btn-bg: var(--pino);
+  --bs-btn-border-color: var(--pino);
+  --bs-btn-color: var(--arena);
+  --bs-btn-hover-bg: var(--pino-claro);
+  --bs-btn-hover-border-color: var(--pino-claro);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--pino-claro);
+}
+
+.btn-terracota {
+  --bs-btn-bg: var(--terracota);
+  --bs-btn-border-color: var(--terracota);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-bg: var(--terracota-oscura);
+  --bs-btn-hover-border-color: var(--terracota-oscura);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--terracota-oscura);
+}
+
+.btn-linea {
+  --bs-btn-border-color: var(--linea);
+  --bs-btn-color: var(--tinta);
+  --bs-btn-hover-bg: var(--arena);
+  --bs-btn-hover-border-color: var(--pino);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--pino);
+  box-shadow: 0 0 0 0.2rem rgba(31, 58, 52, 0.15);
+}
+
+.form-check-input:checked {
+  background-color: var(--pino);
+  border-color: var(--pino);
+}
+
+/* ---------- Páginas de acceso (login y registro) ---------- */
+.acceso {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.acceso-portada {
+  background: var(--pino);
+  color: var(--arena);
+  padding: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.acceso-portada .marca {
+  font-size: 2.5rem;
+}
+
+.acceso-formulario {
+  padding: 4rem;
+  display: flex;
+  align-items: center;
+}
+
+.acceso-formulario > div {
+  width: 100%;
+  max-width: 420px;
+}
+
+@media (max-width: 768px) {
+  .contenedor { flex-direction: column; }
+  .lateral { width: 100%; padding: 0.5rem 0; }
+  .contenido, .barra, .pie { padding-left: 1rem; padding-right: 1rem; }
+  .acceso { grid-template-columns: 1fr; }
+  .acceso-portada, .acceso-formulario { padding: 2rem 1rem; }
+}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block titulo %}Productos{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>{% if user.es_cliente %}Catálogo{% else %}Productos{% endif %}</h1>
+  {% if not user.es_cliente %}
+    <a href="{% url 'productos:crear' %}" class="btn btn-terracota">Nuevo producto</a>
+  {% endif %}
+</div>
+
+{# Búsqueda por GET: el término queda en la URL (?q=...) #}
+<form method="get" class="d-flex gap-2 mb-3" style="max-width: 420px;">
+  <input type="search" name="q" value="{{ buscar }}" class="form-control" placeholder="Código o nombre">
+  <button class="btn btn-linea" type="submit">Buscar</button>
+</form>
+
+<table class="table table-hover align-middle">
+  <thead>
+    <tr>
+      <th>Código</th>
+      <th>Nombre</th>
+      <th class="text-end">Precio</th>
+      <th class="text-end">Disponible</th>
+      {% if not user.es_cliente %}<th>Estado</th>{% endif %}
+      {% if user.es_admin %}<th class="text-end">Acciones</th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for producto in productos %}
+      <tr>
+        <td>{{ producto.pro_codigo }}</td>
+        <td>
+          {{ producto.pro_nombre }}
+          {% if producto.pro_descripcion %}<div class="small text-secondary">{{ producto.pro_descripcion }}</div>{% endif %}
+        </td>
+        <td class="text-end">$ {{ producto.pro_precio|floatformat:0|intcomma }}</td>
+        <td class="text-end {% if producto.stock.sto_bajo_minimo %}stock-bajo{% endif %}">
+          {{ producto.stock.sto_cantidad|default:0 }}
+        </td>
+        {% if not user.es_cliente %}
+          <td>{% if producto.pro_activo %}Activo{% else %}<span class="text-secondary">Inactivo</span>{% endif %}</td>
+        {% endif %}
+        {% if user.es_admin %}
+          <td class="text-end text-nowrap">
+            <a href="{% url 'productos:editar' producto.pk %}" class="btn btn-sm btn-linea">Editar</a>
+            <a href="{% url 'productos:eliminar' producto.pk %}" class="btn btn-sm btn-linea">Eliminar</a>
+          </td>
+        {% endif %}
+      </tr>
+    {% empty %}
+      <tr><td colspan="6" class="text-secondary">No hay productos{% if buscar %} que coincidan con "{{ buscar }}"{% endif %}.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

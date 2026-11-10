@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block titulo %}Eliminar producto{% endblock %}
+
+{% block contenido %}
+<div class="encabezado">
+  <h1>Eliminar producto</h1>
+</div>
+
+<div class="panel" style="max-width: 640px;">
+  <p>Se eliminará <strong>{{ producto.pro_codigo }} - {{ producto.pro_nombre }}</strong> junto con su registro de stock. Esta acción no se puede deshacer.</p>
+
+  {# Eliminar se confirma por POST: un enlace GET nunca debe borrar datos #}
+  <form method="post" class="d-flex gap-2 mt-4">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-terracota">Sí, eliminar</button>
+    <a href="{% url 'productos:lista' %}" class="btn btn-linea">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

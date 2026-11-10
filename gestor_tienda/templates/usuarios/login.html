@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block titulo %}Ingresar{% endblock %}
+
+{% block publico %}
+<section class="acceso">
+  <div class="acceso-portada">
+    <span class="marca">Gestor Tienda</span>
+    <p class="mt-2 mb-0">Inventario, clientes y ventas en un solo lugar.</p>
+  </div>
+
+  <div class="acceso-formulario">
+    <div>
+      <h1 class="h3 mb-4">Ingresar</h1>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {# next viene en la URL cuando el middleware nos manda aquí #}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger rounded-0">Usuario o contraseña incorrectos.</div>
+        {% endif %}
+
+        {% for campo in form %}
+          {% include "partials/_campo.html" %}
+        {% endfor %}
+
+        <button type="submit" class="btn btn-pino w-100">Ingresar</button>
+      </form>
+
+      <p class="mt-4 mb-0">¿Eres cliente nuevo? <a href="{% url 'usuarios:registro' %}">Crea tu cuenta</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models import F
 
 from apps.common.models import CommonModel
+from apps.stocks.models import Stock
 
 
 class DetalleCompra(CommonModel):
@@ -33,6 +35,16 @@ class DetalleCompra(CommonModel):
                 fields=["fk_com", "fk_pro"], name="producto_unico_por_compra"
             ),
         ]
+
+    def save(self, *args, **kwargs):
+        es_nuevo = self._state.adding
+        super().save(*args, **kwargs)
+        # Solo al registrar el detalle por primera vez entra mercancía.
+        # F() hace la suma directamente en la base de datos (UPDATE ... SET x = x + n).
+        if es_nuevo:
+            Stock.objects.filter(fk_pro=self.fk_pro).update(
+                sto_cantidad=F("sto_cantidad") + self.dco_cantidad
+            )
 
     def __str__(self):
         return f"{self.dco_cantidad} x {self.fk_pro.pro_nombre}"

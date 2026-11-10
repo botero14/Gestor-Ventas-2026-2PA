@@ -1,6 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F
 
 from apps.common.models import CommonModel
+from apps.stocks.models import Stock
 
 
 class DetalleVenta(CommonModel):
@@ -33,6 +36,22 @@ class DetalleVenta(CommonModel):
                 fields=["fk_ven", "fk_pro"], name="producto_unico_por_venta"
             ),
         ]
+
+    def clean(self):
+        # Los formularios (incluido el admin) llaman a clean() antes de guardar
+        if self._state.adding and self.fk_pro_id:
+            stock = Stock.objects.filter(fk_pro_id=self.fk_pro_id).first()
+            if stock is None or stock.sto_cantidad < self.dve_cantidad:
+                raise ValidationError("No hay unidades suficientes en stock.")
+
+    def save(self, *args, **kwargs):
+        es_nuevo = self._state.adding
+        super().save(*args, **kwargs)
+        # Al registrar la venta sale mercancía de la bodega
+        if es_nuevo:
+            Stock.objects.filter(fk_pro=self.fk_pro).update(
+                sto_cantidad=F("sto_cantidad") - self.dve_cantidad
+            )
 
     def __str__(self):
         return f"{self.dve_cantidad} x {self.fk_pro.pro_nombre}"

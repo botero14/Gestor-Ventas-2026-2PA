@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registro{% endblock %}
+
+{% block publico %}
+<section class="acceso">
+  <div class="acceso-portada">
+    <span class="marca">Gestor Tienda</span>
+    <p class="mt-2 mb-0">Regístrate como cliente para consultar el catálogo.</p>
+  </div>
+
+  <div class="acceso-formulario">
+    <div>
+      <h1 class="h3 mb-4">Crear cuenta</h1>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for campo in form %}
+          {% include "partials/_campo.html" %}
+        {% endfor %}
+        <button type="submit" class="btn btn-pino w-100">Registrarme</button>
+      </form>
+
+      <p class="mt-4 mb-0">¿Ya tienes cuenta? <a href="{% url 'usuarios:login' %}">Ingresa</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

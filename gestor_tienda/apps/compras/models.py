@@ -14,7 +14,7 @@ class Compra(CommonModel):
         verbose_name="proveedor",
     )
     com_factura = models.CharField("factura del proveedor", max_length=30)
-    com_fecha = models.DateField("fecha")
+    com_fecha = models.DateField("fecha", db_index=True)  # se filtra mucho por fecha
     com_productos = models.ManyToManyField(  # N:M resuelto con la tabla intermedia
         "productos.Producto",
         through="detalles_compra.DetalleCompra",

@@ -1,6 +1,9 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render
+
+from .models import Cliente
 
 
-# Create your views here.
 def lista_clientes(request):
-    return HttpResponse("<h1> Vista de clientes </h1>")
+    # Solo ADMIN y VENDEDOR llegan aquí (ver RUTAS_POR_ROL en el middleware)
+    clientes = Cliente.objects.select_related("fk_usu")
+    return render(request, "clientes/lista.html", {"clientes": clientes})

@@ -37,12 +37,14 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.humanize",  # filtros de formato como intcomma
     "apps.common",
+    "apps.usuarios",
     "apps.clientes",
+    "apps.vendedores",
     "apps.proveedores",
     "apps.productos",
     "apps.stocks",
-    "apps.ejemplares",
     "apps.compras",
     "apps.detalles_compra",
     "apps.ventas",
@@ -57,6 +59,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Propio: va después de AuthenticationMiddleware porque usa request.user
+    "apps.common.middleware.RolMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -64,7 +68,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -112,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = "en-co"
+LANGUAGE_CODE = "es-co"
 
 TIME_ZONE = "America/Bogota"
 
@@ -125,6 +129,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
+
+# Autenticación
+# Tabla única de usuarios: reemplaza al User que trae Django por defecto
+AUTH_USER_MODEL = "usuarios.Usuario"
+
+LOGIN_URL = "usuarios:login"
+LOGIN_REDIRECT_URL = "inicio"
+LOGOUT_REDIRECT_URL = "usuarios:login"
 
 
 # Email

@@ -4,7 +4,7 @@ from apps.common.models import CommonModel
 
 
 class Venta(CommonModel):
-    """Salida de mercancía: la tienda le vende productos a un cliente."""
+    """Salida de mercancía: un vendedor le vende productos a un cliente."""
 
     class MetodoPago(models.TextChoices):
         EFECTIVO = "EFECTIVO", "Efectivo"
@@ -18,7 +18,13 @@ class Venta(CommonModel):
         related_name="ventas",
         verbose_name="cliente",
     )
-    ven_fecha = models.DateField("fecha")
+    fk_vdr = models.ForeignKey(
+        "vendedores.Vendedor",
+        on_delete=models.PROTECT,
+        related_name="ventas",
+        verbose_name="vendedor",
+    )
+    ven_fecha = models.DateField("fecha", db_index=True)  # se filtra mucho por fecha
     ven_metodo_pago = models.CharField(
         "método de pago",
         max_length=15,

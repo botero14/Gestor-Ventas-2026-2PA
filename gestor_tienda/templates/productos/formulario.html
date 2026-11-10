@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block titulo %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+{# La misma plantilla sirve para crear y para editar; solo cambia el título #}
+<div class="encabezado">
+  <h1>{{ titulo }}</h1>
+</div>
+
+<div class="panel" style="max-width: 640px;">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for campo in form %}
+      {% include "partials/_campo.html" %}
+    {% endfor %}
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-pino">Guardar</button>
+      <a href="{% url 'productos:lista' %}" class="btn btn-linea">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

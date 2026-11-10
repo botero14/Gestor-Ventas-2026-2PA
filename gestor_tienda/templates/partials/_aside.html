@@ -1,0 +1,24 @@
+{# request.resolver_match.view_name dice en qué ruta estamos, para marcar el enlace activo #}
+{% with actual=request.resolver_match.view_name %}
+<aside class="lateral">
+  <a href="{% url 'inicio' %}" class="{% if actual == 'inicio' %}activo{% endif %}">Inicio</a>
+
+  <p class="titulo-seccion">Inventario</p>
+  <a href="{% url 'productos:lista' %}" class="{% if actual == 'productos:lista' %}activo{% endif %}">
+    {% if user.es_cliente %}Catálogo{% else %}Productos{% endif %}
+  </a>
+
+  {# Ocultar el enlace es solo comodidad visual; la protección real está en el middleware #}
+  {% if not user.es_cliente %}
+    <a href="{% url 'productos:crear' %}" class="{% if actual == 'productos:crear' %}activo{% endif %}">Nuevo producto</a>
+
+    <p class="titulo-seccion">Personas</p>
+    <a href="{% url 'clientes:lista' %}" class="{% if actual == 'clientes:lista' %}activo{% endif %}">Clientes</a>
+  {% endif %}
+
+  {% if user.es_admin %}
+    <p class="titulo-seccion">Sistema</p>
+    <a href="{% url 'admin:index' %}">Administración</a>
+  {% endif %}
+</aside>
+{% endwith %}

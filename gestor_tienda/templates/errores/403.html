@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block titulo %}Acceso restringido{% endblock %}
+
+{% block contenido %}
+{# Esta página la devuelve RolMiddleware cuando el rol no tiene permiso #}
+<div class="encabezado">
+  <h1>Acceso restringido</h1>
+  <span class="text-secondary">Error 403</span>
+</div>
+
+<div class="panel" style="max-width: 640px;">
+  <p>Tu rol (<strong>{{ user.get_usu_rol_display }}</strong>) no tiene permiso para entrar a esta sección.</p>
+  <a href="{% url 'inicio' %}" class="btn btn-pino mt-2">Volver al inicio</a>
+</div>
+{% endblock %}

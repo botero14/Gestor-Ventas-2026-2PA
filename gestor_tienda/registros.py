@@ -1,3 +1,11 @@
+"""
+Datos de prueba.
+
+Uso:  python manage.py shell -c "exec(open('registros.py', encoding='utf-8').read())"
+
+Contraseña de todos los usuarios: tienda2026
+"""
+
 from datetime import date
 from decimal import Decimal
 
@@ -5,39 +13,55 @@ from apps.clientes.models import Cliente
 from apps.compras.models import Compra
 from apps.detalles_compra.models import DetalleCompra
 from apps.detalles_venta.models import DetalleVenta
-from apps.ejemplares.models import Ejemplar
 from apps.productos.models import Producto
 from apps.proveedores.models import Proveedor
 from apps.stocks.models import Stock
+from apps.usuarios.models import Usuario
+from apps.vendedores.models import Vendedor
 from apps.ventas.models import Venta
 
-# ---------- Clientes ----------
-ana, _ = Cliente.objects.get_or_create(
-    cli_documento="1001001",
-    defaults={
-        "cli_nombres": "Ana",
-        "cli_apellidos": "Gómez",
-        "cli_correo": "ana@correo.com",
-        "cli_telefono": "3001112233",
-    },
+CLAVE = "tienda2026"
+
+
+def crear_usuario(username, nombres, apellidos, rol, **extra):
+    """Crea el usuario una sola vez; create_user se encarga de cifrar la contraseña."""
+    usuario = Usuario.objects.filter(username=username).first()
+    if usuario is None:
+        usuario = Usuario.objects.create_user(
+            username=username,
+            password=CLAVE,
+            first_name=nombres,
+            last_name=apellidos,
+            email=f"{username}@correo.com",
+            usu_rol=rol,
+            **extra,
+        )
+    return usuario
+
+
+# ---------- Usuarios: uno por rol ----------
+crear_usuario(
+    "admin", "Administrador", "Tienda", Usuario.Rol.ADMIN, is_staff=True, is_superuser=True
 )
-luis, _ = Cliente.objects.get_or_create(
-    cli_documento="1002002",
-    defaults={
-        "cli_nombres": "Luis",
-        "cli_apellidos": "Pérez",
-        "cli_correo": "luis@correo.com",
-    },
+
+carlos = crear_usuario("carlos", "Carlos", "Mendoza", Usuario.Rol.VENDEDOR)
+vendedor, _ = Vendedor.objects.get_or_create(
+    fk_usu=carlos, defaults={"vdr_codigo": "V-001", "vdr_fecha_ingreso": date(2026, 2, 1)}
 )
-marta, _ = Cliente.objects.get_or_create(
-    cli_documento="1003003",
-    defaults={
-        "cli_nombres": "Marta",
-        "cli_apellidos": "Ríos",
-        "cli_correo": "marta@correo.com",
-        "cli_telefono": "3104445566",
-    },
-)
+
+# ---------- Clientes (usuario + perfil 1:1) ----------
+datos_clientes = [
+    ("ana", "Ana", "Gómez", "1001001", "3001112233"),
+    ("luis", "Luis", "Pérez", "1002002", ""),
+    ("marta", "Marta", "Ríos", "1003003", "3104445566"),
+]
+clientes = {}
+for username, nombres, apellidos, documento, telefono in datos_clientes:
+    usuario = crear_usuario(username, nombres, apellidos, Usuario.Rol.CLIENTE)
+    clientes[username], _ = Cliente.objects.get_or_create(
+        fk_usu=usuario,
+        defaults={"cli_documento": documento, "cli_telefono": telefono},
+    )
 
 # ---------- Proveedores ----------
 tecno, _ = Proveedor.objects.get_or_create(
@@ -74,7 +98,7 @@ monitor, _ = Producto.objects.get_or_create(
     },
 )
 
-# ---------- Stock (1:1 con Producto) ----------
+# ---------- Stock (1:1 con Producto); arranca en cero ----------
 Stock.objects.get_or_create(
     fk_pro=teclado, defaults={"sto_minimo": 2, "sto_ubicacion": "Estante A1"}
 )
@@ -85,7 +109,7 @@ Stock.objects.get_or_create(
     fk_pro=monitor, defaults={"sto_minimo": 1, "sto_ubicacion": "Bodega B1"}
 )
 
-# ---------- Compras a proveedores + productos por compra ----------
+# ---------- Compras: cada detalle nuevo suma al stock ----------
 compra1, _ = Compra.objects.get_or_create(
     com_factura="FV-1001", defaults={"fk_prv": tecno, "com_fecha": date(2026, 10, 20)}
 )
@@ -110,16 +134,11 @@ DetalleCompra.objects.get_or_create(
     defaults={"dco_cantidad": 2, "dco_costo_unitario": Decimal("550000")},
 )
 
-# ---------- Ejemplares (entidad débil): una unidad por cada producto comprado ----------
-for detalle in DetalleCompra.objects.all():
-    for numero in range(1, detalle.dco_cantidad + 1):
-        Ejemplar.objects.get_or_create(fk_pro=detalle.fk_pro, eje_numero=numero)
-
-# ---------- Ventas a clientes + productos por venta ----------
-venta1, creada1 = Venta.objects.get_or_create(
-    fk_cli=ana,
+# ---------- Ventas: cada detalle nuevo resta del stock ----------
+venta1, _ = Venta.objects.get_or_create(
+    fk_cli=clientes["ana"],
     ven_fecha=date(2026, 10, 24),
-    defaults={"ven_metodo_pago": Venta.MetodoPago.TARJETA},
+    defaults={"fk_vdr": vendedor, "ven_metodo_pago": Venta.MetodoPago.TARJETA},
 )
 DetalleVenta.objects.get_or_create(
     fk_ven=venta1,
@@ -132,10 +151,10 @@ DetalleVenta.objects.get_or_create(
     defaults={"dve_cantidad": 2, "dve_precio_unitario": mouse.pro_precio},
 )
 
-venta2, creada2 = Venta.objects.get_or_create(
-    fk_cli=luis,
+venta2, _ = Venta.objects.get_or_create(
+    fk_cli=clientes["luis"],
     ven_fecha=date(2026, 10, 25),
-    defaults={"ven_metodo_pago": Venta.MetodoPago.EFECTIVO},
+    defaults={"fk_vdr": vendedor, "ven_metodo_pago": Venta.MetodoPago.EFECTIVO},
 )
 DetalleVenta.objects.get_or_create(
     fk_ven=venta2,
@@ -143,23 +162,14 @@ DetalleVenta.objects.get_or_create(
     defaults={"dve_cantidad": 1, "dve_precio_unitario": monitor.pro_precio},
 )
 
-# Marcar como vendidos los ejemplares que salieron en las ventas
-for detalle in DetalleVenta.objects.all():
-    vendidos = detalle.fk_pro.ejemplares.filter(eje_estado="VENDIDO").count()
-    faltan = detalle.dve_cantidad - vendidos
-    if faltan > 0:
-        ids = detalle.fk_pro.ejemplares.filter(eje_estado="DISPONIBLE").values_list(
-            "pk_eje_id", flat=True
-        )[:faltan]
-        Ejemplar.objects.filter(pk_eje_id__in=list(ids)).update(eje_estado="VENDIDO")
-
 print("Datos de prueba creados.")
 for modelo in (
+    Usuario,
     Cliente,
+    Vendedor,
     Proveedor,
     Producto,
     Stock,
-    Ejemplar,
     Compra,
     DetalleCompra,
     Venta,

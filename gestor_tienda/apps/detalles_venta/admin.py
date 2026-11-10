@@ -7,5 +7,5 @@ from .models import DetalleVenta
 @admin.register(DetalleVenta)
 class DetalleVentaAdmin(CommonAdmin):
     list_display = ("fk_ven", "fk_pro", "dve_cantidad", "dve_precio_unitario")
-    search_fields = ("fk_pro__pro_nombre", "fk_ven__fk_cli__cli_nombres")
+    search_fields = ("fk_pro__pro_nombre", "fk_ven__fk_cli__cli_documento")
     list_filter = ("fk_pro",)
